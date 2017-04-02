@@ -26,6 +26,13 @@ vcpkg_apply_patches(
             ${CMAKE_CURRENT_LIST_DIR}/STRINGIFYPatch.patch
 )
 
+if(VCPKG_CRT_LINKAGE STREQUAL "static")
+    vcpkg_apply_patches(
+        SOURCE_PATH ${MASTER_COPY_SOURCE_PATH}
+        PATCHES ${CMAKE_CURRENT_LIST_DIR}/StaticCRT.patch
+    )
+endif()
+
 set(CONFIGURE_COMMAND ${PERL} Configure
     enable-static-engine
     enable-capieng
