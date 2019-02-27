@@ -3,7 +3,7 @@ if(VCPKG_CMAKE_SYSTEM_NAME)
 endif()
 
 include(vcpkg_common_functions)
-set(OPENSSL_VERSION 1.0.2q)
+set(OPENSSL_VERSION 1.1.1b)
 set(MASTER_COPY_SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/src/openssl-${OPENSSL_VERSION})
 
 vcpkg_find_acquire_program(PERL)
@@ -12,18 +12,14 @@ get_filename_component(PERL_EXE_PATH ${PERL} DIRECTORY)
 set(ENV{PATH} "$ENV{PATH};${PERL_EXE_PATH}")
 
 vcpkg_download_distfile(OPENSSL_SOURCE_ARCHIVE
-    URLS "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" "https://www.openssl.org/source/old/1.0.2/openssl-${OPENSSL_VERSION}.tar.gz"
+    URLS "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
     FILENAME "openssl-${OPENSSL_VERSION}.tar.gz"
-    SHA512 403e6cad42db3ba860c3fa4fa81c1b7b02f0b873259e5c19a7fc8e42de0854602555f1b1ca74f4e3a7737a4cbd3aac063061e628ec86534586500819fae7fec0
+    SHA512 b54025fbb4fe264466f3b0d762aad4be45bd23cd48bdb26d901d4c41a40bfd776177e02230995ab181a695435039dbad313f4b9a563239a70807a2e19ecf045d
 )
 
 vcpkg_extract_source_archive(${OPENSSL_SOURCE_ARCHIVE})
 vcpkg_apply_patches(
     SOURCE_PATH ${MASTER_COPY_SOURCE_PATH}
-    PATCHES ${CMAKE_CURRENT_LIST_DIR}/ConfigureIncludeQuotesFix.patch
-            ${CMAKE_CURRENT_LIST_DIR}/STRINGIFYPatch.patch
-            ${CMAKE_CURRENT_LIST_DIR}/EnableWinARM32.patch
-            ${CMAKE_CURRENT_LIST_DIR}/EmbedSymbolsInStaticLibsZ7.patch
 )
 
 vcpkg_find_acquire_program(NASM)
@@ -32,19 +28,22 @@ set(ENV{PATH} "${NASM_EXE_PATH};$ENV{PATH}")
 
 vcpkg_find_acquire_program(JOM)
 
+find_program(NMAKE nmake)
+
 set(CONFIGURE_COMMAND ${PERL} Configure
     enable-static-engine
     enable-capieng
-    no-ssl2
+    no-makedepend
     -utf-8
 )
 
 if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
     set(OPENSSL_ARCH VC-WIN32)
-    set(OPENSSL_DO "ms\\do_nasm.bat")
+    set(CONFIGURE_COMMAND ${CONFIGURE_COMMAND}
+        no-asm
+    )
 elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-    set(OPENSSL_ARCH VC-WIN64A)
-    set(OPENSSL_DO "ms\\do_win64a.bat")
+    set(OPENSSL_ARCH VC-WIN64A-masm)
 elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
     set(OPENSSL_ARCH VC-WIN32)
     set(OPENSSL_DO "ms\\do_ms.bat")
@@ -57,9 +56,9 @@ else()
 endif()
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
-    set(OPENSSL_MAKEFILE "ms\\ntdll.mak")
+    set(OPENSSL_MAKEFILE "makefile")
 else()
-    set(OPENSSL_MAKEFILE "ms\\nt.mak")
+    set(OPENSSL_MAKEFILE "makefile")
 endif()
 
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg)
@@ -75,11 +74,6 @@ if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
         COMMAND ${CONFIGURE_COMMAND} ${OPENSSL_ARCH} "--prefix=${OPENSSLDIR_RELEASE}" "--openssldir=${OPENSSLDIR_RELEASE}" -FS
         WORKING_DIRECTORY ${SOURCE_PATH_RELEASE}
         LOGNAME configure-perl-${TARGET_TRIPLET}-${CMAKE_BUILD_TYPE}-rel
-    )
-    vcpkg_execute_required_process(
-        COMMAND ${OPENSSL_DO}
-        WORKING_DIRECTORY ${SOURCE_PATH_RELEASE}
-        LOGNAME configure-do-${TARGET_TRIPLET}-${CMAKE_BUILD_TYPE}-rel
     )
     message(STATUS "Configure ${TARGET_TRIPLET}-rel done")
 
@@ -112,11 +106,6 @@ if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
         COMMAND ${CONFIGURE_COMMAND} debug-${OPENSSL_ARCH} "--prefix=${OPENSSLDIR_DEBUG}" "--openssldir=${OPENSSLDIR_DEBUG}" -FS
         WORKING_DIRECTORY ${SOURCE_PATH_DEBUG}
         LOGNAME configure-perl-${TARGET_TRIPLET}-${CMAKE_BUILD_TYPE}-dbg
-    )
-    vcpkg_execute_required_process(
-        COMMAND ${OPENSSL_DO}
-        WORKING_DIRECTORY ${SOURCE_PATH_DEBUG}
-        LOGNAME configure-do-${TARGET_TRIPLET}-${CMAKE_BUILD_TYPE}-dbg
     )
     message(STATUS "Configure ${TARGET_TRIPLET}-dbg done")
 
