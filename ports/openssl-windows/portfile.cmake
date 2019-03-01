@@ -126,11 +126,33 @@ if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
 endif()
 
 
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+file(REMOVE_RECURSE
+    ${CURRENT_PACKAGES_DIR}/debug/certs
+    ${CURRENT_PACKAGES_DIR}/debug/html
+    ${CURRENT_PACKAGES_DIR}/debug/include
+    ${CURRENT_PACKAGES_DIR}/debug/lib/engines-1_1
+    ${CURRENT_PACKAGES_DIR}/debug/misc
+    ${CURRENT_PACKAGES_DIR}/debug/private
+    ${CURRENT_PACKAGES_DIR}/certs
+    ${CURRENT_PACKAGES_DIR}/html
+    ${CURRENT_PACKAGES_DIR}/lib/engines-1_1
+    ${CURRENT_PACKAGES_DIR}/misc
+    ${CURRENT_PACKAGES_DIR}/private
+)
 file(REMOVE
     ${CURRENT_PACKAGES_DIR}/debug/bin/openssl.exe
+    ${CURRENT_PACKAGES_DIR}/debug/bin/openssl.pdb
+    ${CURRENT_PACKAGES_DIR}/debug/bin/c_rehash.pl
+    ${CURRENT_PACKAGES_DIR}/debug/ct_log_list.cnf
+    ${CURRENT_PACKAGES_DIR}/debug/ct_log_list.cnf.dist
     ${CURRENT_PACKAGES_DIR}/debug/openssl.cnf
+    ${CURRENT_PACKAGES_DIR}/debug/openssl.cnf.dist
+    ${CURRENT_PACKAGES_DIR}/bin/openssl.pdb
+    ${CURRENT_PACKAGES_DIR}/bin/c_rehash.pl
+    ${CURRENT_PACKAGES_DIR}/ct_log_list.cnf
+    ${CURRENT_PACKAGES_DIR}/ct_log_list.cnf.dist
     ${CURRENT_PACKAGES_DIR}/openssl.cnf
+    ${CURRENT_PACKAGES_DIR}/openssl.cnf.dist
 )
 
 file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools/openssl/)
