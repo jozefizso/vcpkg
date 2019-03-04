@@ -1,0 +1,21 @@
+# AppVeyor for building OpenSSL 1.1.1 package
+version: 1.1.1-{build}
+
+image: Visual Studio 2017
+platform:
+  - x86
+  - x64
+
+configuration:
+  - Release
+  
+environment:
+  matrix:
+    - VCPKG_TRIPLET: windows
+    - VCPKG_TRIPLET: windows-static
+
+before_build:
+  - bootstrap-vcpkg.bat
+
+build_script:
+  - vcpkg install openssl-windows --triplet %platform%-%VCPKG_TRIPLET%
