@@ -1,0 +1,20 @@
+# Build OpenSSL library using vcpkg.exe
+
+trigger:
+- master
+
+pool:
+  vmImage: vs2017-win2016
+
+variables:
+  platform: x86
+  vcpkg_triplet: windows-static
+
+steps:
+- script: |
+    bootstrap-vcpkg.bat
+  displayName: 'Build vcpkg.exe'
+
+- script: |
+    vcpkg install openssl-windows --triplet %PLATFORM%-%VCPKG_TRIPLET%
+  displayName: 'Build OpenSSL'
