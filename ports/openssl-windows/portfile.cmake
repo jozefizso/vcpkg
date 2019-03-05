@@ -26,29 +26,25 @@ vcpkg_find_acquire_program(NASM)
 get_filename_component(NASM_EXE_PATH ${NASM} DIRECTORY)
 set(ENV{PATH} "${NASM_EXE_PATH};$ENV{PATH}")
 
-vcpkg_find_acquire_program(JOM)
-
 find_program(NMAKE nmake)
+
+set(OPENSSL_MAKEFILE "makefile")
 
 set(CONFIGURE_COMMAND ${PERL} Configure
     enable-static-engine
     enable-capieng
     no-makedepend
-    -utf-8
+    no-tests
 )
 
 if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
     set(OPENSSL_ARCH VC-WIN32)
-    set(CONFIGURE_COMMAND ${CONFIGURE_COMMAND}
-        no-asm
-    )
 elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-    set(OPENSSL_ARCH VC-WIN64A-masm)
+    set(OPENSSL_ARCH VC-WIN64A)
 elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
     set(OPENSSL_ARCH VC-WIN32)
     set(OPENSSL_DO "ms\\do_ms.bat")
     set(CONFIGURE_COMMAND ${CONFIGURE_COMMAND}
-        no-asm
         -D_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE
     )
 else()
@@ -56,9 +52,9 @@ else()
 endif()
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
-    set(OPENSSL_MAKEFILE "makefile")
+    set(CONFIGURE_COMMAND ${CONFIGURE_COMMAND} shared)
 else()
-    set(OPENSSL_MAKEFILE "makefile")
+    set(CONFIGURE_COMMAND ${CONFIGURE_COMMAND} no-shared)
 endif()
 
 file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg)
@@ -71,26 +67,23 @@ if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
 
     message(STATUS "Configure ${TARGET_TRIPLET}-rel")
     vcpkg_execute_required_process(
-        COMMAND ${CONFIGURE_COMMAND} ${OPENSSL_ARCH} "--prefix=${OPENSSLDIR_RELEASE}" "--openssldir=${OPENSSLDIR_RELEASE}" -FS
+        COMMAND ${CONFIGURE_COMMAND} ${OPENSSL_ARCH} "--prefix=${OPENSSLDIR_RELEASE}" "--openssldir=${OPENSSLDIR_RELEASE}" -utf-8 -MP -FS
         WORKING_DIRECTORY ${SOURCE_PATH_RELEASE}
         LOGNAME configure-perl-${TARGET_TRIPLET}-${CMAKE_BUILD_TYPE}-rel
     )
     message(STATUS "Configure ${TARGET_TRIPLET}-rel done")
 
     message(STATUS "Build ${TARGET_TRIPLET}-rel")
-    # Openssl's buildsystem has a race condition which will cause JOM to fail at some point.
-    # This is ok; we just do as much work as we can in parallel first, then follow up with a single-threaded build.
-    make_directory(${SOURCE_PATH_RELEASE}/inc32/openssl)
-    execute_process(
-        COMMAND ${JOM} -k -j $ENV{NUMBER_OF_PROCESSORS} -f ${OPENSSL_MAKEFILE}
+    vcpkg_execute_required_process(
+        COMMAND nmake -f ${OPENSSL_MAKEFILE}
         WORKING_DIRECTORY ${SOURCE_PATH_RELEASE}
-        OUTPUT_FILE ${CURRENT_BUILDTREES_DIR}/build-${TARGET_TRIPLET}-rel-0-out.log
-        ERROR_FILE ${CURRENT_BUILDTREES_DIR}/build-${TARGET_TRIPLET}-rel-0-err.log
+        LOGNAME build-${TARGET_TRIPLET}-rel-0
     )
     vcpkg_execute_required_process(
         COMMAND nmake -f ${OPENSSL_MAKEFILE} install
         WORKING_DIRECTORY ${SOURCE_PATH_RELEASE}
-        LOGNAME build-${TARGET_TRIPLET}-rel-1)
+        LOGNAME build-${TARGET_TRIPLET}-rel-1
+    )
 
     message(STATUS "Build ${TARGET_TRIPLET}-rel done")
 endif()
@@ -103,24 +96,23 @@ if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
     set(OPENSSLDIR_DEBUG ${CURRENT_PACKAGES_DIR}/debug)
 
     vcpkg_execute_required_process(
-        COMMAND ${CONFIGURE_COMMAND} debug-${OPENSSL_ARCH} "--prefix=${OPENSSLDIR_DEBUG}" "--openssldir=${OPENSSLDIR_DEBUG}" -FS
+        COMMAND ${CONFIGURE_COMMAND} debug-${OPENSSL_ARCH} "--prefix=${OPENSSLDIR_DEBUG}" "--openssldir=${OPENSSLDIR_DEBUG}" -utf-8 -MP -FS
         WORKING_DIRECTORY ${SOURCE_PATH_DEBUG}
         LOGNAME configure-perl-${TARGET_TRIPLET}-${CMAKE_BUILD_TYPE}-dbg
     )
     message(STATUS "Configure ${TARGET_TRIPLET}-dbg done")
 
     message(STATUS "Build ${TARGET_TRIPLET}-dbg")
-    make_directory(${SOURCE_PATH_DEBUG}/inc32/openssl)
-    execute_process(
-        COMMAND ${JOM} -k -j $ENV{NUMBER_OF_PROCESSORS} -f ${OPENSSL_MAKEFILE}
+    vcpkg_execute_required_process(
+        COMMAND nmake -f ${OPENSSL_MAKEFILE}
         WORKING_DIRECTORY ${SOURCE_PATH_DEBUG}
-        OUTPUT_FILE ${CURRENT_BUILDTREES_DIR}/build-${TARGET_TRIPLET}-dbg-0-out.log
-        ERROR_FILE ${CURRENT_BUILDTREES_DIR}/build-${TARGET_TRIPLET}-dbg-0-err.log
+        LOGNAME build-${TARGET_TRIPLET}-dbg-0
     )
     vcpkg_execute_required_process(
         COMMAND nmake -f ${OPENSSL_MAKEFILE} install
         WORKING_DIRECTORY ${SOURCE_PATH_DEBUG}
-        LOGNAME build-${TARGET_TRIPLET}-dbg-1)
+        LOGNAME build-${TARGET_TRIPLET}-dbg-1
+    )
 
     message(STATUS "Build ${TARGET_TRIPLET}-dbg done")
 endif()
