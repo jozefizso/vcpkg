@@ -2,6 +2,7 @@
 
 trigger:
 - master
+- dev/4267_openssl_1.1.1b
 
 pool:
   vmImage: vs2017-win2016
