@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 74bbd3294f..f6c4a340fc 100644
+index 11b3585b48..84fecca323 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -99,6 +99,11 @@ endif()
+@@ -100,6 +100,11 @@ endif()
  
  set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
  

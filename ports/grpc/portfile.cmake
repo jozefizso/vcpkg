@@ -13,13 +13,13 @@ endif()
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO grpc/grpc
-    REF v1.24.3
-    SHA512 19afa8b1fd64c429317c85d8cf42d01af0ac6aec82508740c176e1fd4f92dea9531ea9812523215ed67466bae93a75e14dc34cd9cce5987a13c0104e0313c69c
+    REF v1.25.0
+    SHA512 7d9e126eafdfefe9b5c2eacf9c082b972115f231a55cff53386305f2df68037e2593eedc3f27fe0eaeb7fbe78b28f6b87607cdeccf59929b9a9b33bf74ab5c92
     HEAD_REF master
     PATCHES
         00001-fix-uwp.patch
         00002-static-linking-in-linux.patch
-        00003-undef-base64-macro.patch
+        00003-undef-move64-macro.patch
         00004-link-gdi32-on-windows.patch
         00005-fix-uwp-error.patch
         00006-crypt32.patch
