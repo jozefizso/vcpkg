@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ec1714687e..e15d25097f 100644
+index e5f10a23d2..cc78866f69 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -84,6 +84,9 @@ set_property(CACHE gRPC_SSL_PROVIDER PROPERTY STRINGS "module" "package")
@@ -12,7 +12,7 @@ index ec1714687e..e15d25097f 100644
  set(gRPC_PROTOBUF_PACKAGE_TYPE "" CACHE STRING "Algorithm for searching protobuf package")
  set_property(CACHE gRPC_PROTOBUF_PACKAGE_TYPE PROPERTY STRINGS "CONFIG" "MODULE")
  
-@@ -1911,7 +1914,6 @@ target_link_libraries(grpc
+@@ -2016,7 +2019,6 @@ target_link_libraries(grpc
    ${_gRPC_ALLTARGETS_LIBRARIES}
    gpr
    address_sorting
@@ -20,7 +20,7 @@ index ec1714687e..e15d25097f 100644
    absl::optional
    absl::strings
    absl::status
-@@ -1993,7 +1995,6 @@ target_link_libraries(grpc_csharp_ext
+@@ -2099,7 +2101,6 @@ target_link_libraries(grpc_csharp_ext
    grpc
    gpr
    address_sorting
@@ -28,7 +28,7 @@ index ec1714687e..e15d25097f 100644
  )
  
  
-@@ -2463,7 +2464,6 @@ target_link_libraries(grpc_unsecure
+@@ -2570,7 +2571,6 @@ target_link_libraries(grpc_unsecure
    ${_gRPC_ALLTARGETS_LIBRARIES}
    gpr
    address_sorting
@@ -36,7 +36,7 @@ index ec1714687e..e15d25097f 100644
    absl::optional
    absl::strings
    absl::status
-@@ -2661,7 +2661,6 @@ target_link_libraries(grpc++
+@@ -2769,7 +2769,6 @@ target_link_libraries(grpc++
    grpc
    gpr
    address_sorting
@@ -44,7 +44,7 @@ index ec1714687e..e15d25097f 100644
  )
  
  foreach(_hdr
-@@ -2907,7 +2906,6 @@ target_link_libraries(grpc++_alts
+@@ -3016,7 +3015,6 @@ target_link_libraries(grpc++_alts
    grpc
    gpr
    address_sorting
@@ -52,7 +52,7 @@ index ec1714687e..e15d25097f 100644
  )
  
  foreach(_hdr
-@@ -2976,7 +2974,6 @@ target_link_libraries(grpc++_error_details
+@@ -3085,7 +3083,6 @@ target_link_libraries(grpc++_error_details
    grpc
    gpr
    address_sorting
@@ -60,7 +60,7 @@ index ec1714687e..e15d25097f 100644
  )
  
  foreach(_hdr
-@@ -3049,7 +3046,6 @@ target_link_libraries(grpc++_reflection
+@@ -3158,7 +3155,6 @@ target_link_libraries(grpc++_reflection
    grpc
    gpr
    address_sorting
@@ -68,7 +68,7 @@ index ec1714687e..e15d25097f 100644
  )
  
  foreach(_hdr
-@@ -3330,7 +3326,6 @@ target_link_libraries(grpc++_unsecure
+@@ -3438,7 +3434,6 @@ target_link_libraries(grpc++_unsecure
    grpc_unsecure
    gpr
    address_sorting
@@ -76,7 +76,7 @@ index ec1714687e..e15d25097f 100644
  )
  
  foreach(_hdr
-@@ -3648,7 +3643,6 @@ target_link_libraries(grpcpp_channelz
+@@ -3757,7 +3752,6 @@ target_link_libraries(grpcpp_channelz
    grpc
    gpr
    address_sorting
@@ -84,7 +84,7 @@ index ec1714687e..e15d25097f 100644
  )
  
  foreach(_hdr
-@@ -3675,6 +3669,7 @@ endif()
+@@ -3783,6 +3777,7 @@ endif()
  
  endif()
  
@@ -92,7 +92,7 @@ index ec1714687e..e15d25097f 100644
  add_library(upb
    third_party/upb/upb/decode.c
    third_party/upb/upb/encode.c
-@@ -3726,7 +3721,7 @@ if(gRPC_INSTALL)
+@@ -3851,7 +3846,7 @@ if(gRPC_INSTALL)
    )
  endif()
  
